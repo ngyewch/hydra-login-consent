@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Login - {{.Provider.Name}}</title>
+    <title>Login - {{.Config.Name}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
@@ -43,7 +43,7 @@
 <body>
 <main class="container">
     <form class="form" method="post">
-        <h1 class="centered">{{.Provider.Name}}</h1>
+        <h1 class="centered">{{.Config.Name}}</h1>
         {{if .Request.Client.LogoUri}}
             <div class="centered">
                 <img class="logo" src="{{.Request.Client.LogoUri}}">
@@ -77,9 +77,9 @@
                 <input type="checkbox" id="remember" name="remember"> Remember me
             </label>
             <button type="submit" name="submit" value="Sign in">Sign in</button>
-            {{if .ForgotPasswordUri}}
+            {{if .Config.ForgotPasswordUri}}
                 <div class="centered">
-                    <a href="{{.ForgotPasswordUri}}">{{or .ForgotPasswordText "Forgot password"}}</a>
+                    <a href="{{.Config.ForgotPasswordUri}}">{{or .Config.ForgotPasswordText "Forgot password"}}</a>
                 </div>
             {{end}}
         </fieldset>

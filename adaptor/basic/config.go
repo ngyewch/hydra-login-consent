@@ -1,4 +1,4 @@
-package middleware
+package basic
 
 type Config struct {
 	Name               string `koanf:"name"`

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/knadh/koanf/v2"
-	"github.com/ngyewch/hydra-login-consent/middleware"
+	"github.com/ngyewch/hydra-login-consent/adaptor/basic"
 	"github.com/ngyewch/hydra-login-consent/test/server"
 	"github.com/spf13/cobra"
 )
@@ -16,8 +16,8 @@ var (
 )
 
 type ServeConfig struct {
-	Serve *server.Config     `koanf:"serve"`
-	UI    *middleware.Config `koanf:"ui"`
+	Serve *server.Config `koanf:"serve"`
+	UI    *basic.Config  `koanf:"ui"`
 }
 
 func serve(cmd *cobra.Command, args []string) error {
@@ -38,14 +38,27 @@ func serve(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	provider := middleware.NewDummyProvider()
+	templates, err := basic.DefaultTemplates()
+	if err != nil {
+		return err
+	}
 
-	s, err := server.New(serveConfig.Serve, serveConfig.UI, provider)
+	renderer := basic.NewRenderer(serveConfig.UI, templates)
+	handler := basic.NewHandler(dummyLoginValidator)
+
+	s, err := server.New(serveConfig.Serve, renderer, handler)
 	if err != nil {
 		return err
 	}
 
 	return s.Start()
+}
+
+func dummyLoginValidator(email string, password string) (bool, error) {
+	if password == "password" {
+		return true, nil
+	}
+	return false, nil
 }
 
 func init() {

@@ -3,18 +3,9 @@ package middleware
 import (
 	"fmt"
 	"github.com/fastbill/go-httperrors"
-	"github.com/gorilla/csrf"
 	ory "github.com/ory/client-go"
-	"html/template"
 	"net/http"
 )
-
-type ConsentTemplateData struct {
-	Provider          ProviderInfo
-	Request           *ory.OAuth2ConsentRequest
-	CSRFToken         string
-	CSRFTemplateField template.HTML
-}
 
 func (m *Middleware) getConsent(w http.ResponseWriter, r *http.Request) error {
 	consentChallenge := r.URL.Query().Get("consent_challenge")
@@ -30,16 +21,7 @@ func (m *Middleware) getConsent(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	err = m.renderPage(w, "consent.gohtml",
-		ConsentTemplateData{
-			Provider: ProviderInfo{
-				Name: m.cfg.Name,
-			},
-			Request:           consentRequest,
-			CSRFToken:         csrf.Token(r),
-			CSRFTemplateField: csrf.TemplateField(r),
-		},
-	)
+	err = m.renderer.RenderConsentPage(w, r, consentRequest)
 	if err != nil {
 		return err
 	}
@@ -68,7 +50,7 @@ func (m *Middleware) postConsent(w http.ResponseWriter, r *http.Request) error {
 		session := &ory.AcceptOAuth2ConsentRequestSession{
 			IdToken: idToken,
 		}
-		err = m.provider.PopulateClaims(consentRequest, idToken)
+		err = m.handler.PopulateClaims(consentRequest, idToken)
 		if err != nil {
 			return err
 		}
@@ -118,7 +100,7 @@ func (m *Middleware) handleConsent(w http.ResponseWriter, r *http.Request, conse
 		session := &ory.AcceptOAuth2ConsentRequestSession{
 			IdToken: idToken,
 		}
-		err = m.provider.PopulateClaims(consentRequest, idToken)
+		err = m.handler.PopulateClaims(consentRequest, idToken)
 		if err != nil {
 			return nil, false, fmt.Errorf("could not populate claims: %w", err)
 		}

@@ -2,35 +2,25 @@ package middleware
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"github.com/fastbill/go-httperrors"
 	"github.com/gorilla/mux"
+	"github.com/ngyewch/hydra-login-consent/adaptor"
 	ory "github.com/ory/client-go"
-	"html/template"
 	"net/http"
 )
 
 type Middleware struct {
-	cfg              *Config
 	oryClient        *ory.APIClient
 	oryAuthedContext context.Context
-	templates        *template.Template
-	provider         Provider
+	renderer         adaptor.Renderer
+	handler          adaptor.Handler
 }
 
-type ErrorTemplateData struct {
-	StatusCode int
-	Error      error
-}
-
-func New(cfg *Config, oryClient *ory.APIClient, oryAuthedContext context.Context, templates *template.Template, provider Provider) *Middleware {
+func New(oryClient *ory.APIClient, oryAuthedContext context.Context, renderer adaptor.Renderer, handler adaptor.Handler) *Middleware {
 	return &Middleware{
-		cfg:              cfg,
 		oryClient:        oryClient,
 		oryAuthedContext: oryAuthedContext,
-		templates:        templates,
-		provider:         provider,
+		renderer:         renderer,
+		handler:          handler,
 	}
 }
 
@@ -44,8 +34,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 		m.handlePOST(router, "/consent", m.postConsent) // TODO make configurable
 		m.handleGET(router, "/logout", m.getLogout)     // TODO make configurable
 		m.handlePOST(router, "/logout", m.postLogout)   // TODO make configurable
-		// TODO error URL
-		// TODO post_logout_redirect URL
+		m.handleGET(router, "/error", m.getError)       // TODO make configurable
 
 		var routeMatch mux.RouteMatch
 		if router.Match(r, &routeMatch) {
@@ -60,7 +49,7 @@ func (m *Middleware) handleGET(router *mux.Router, path string, handler func(w h
 	router.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
 		if err != nil {
-			m.handleError(w, err)
+			_ = m.renderer.RenderError(w, err)
 			return
 		}
 	}).Methods("GET")
@@ -70,25 +59,8 @@ func (m *Middleware) handlePOST(router *mux.Router, path string, handler func(w 
 	router.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
 		if err != nil {
-			m.handleError(w, err)
+			_ = m.renderer.RenderError(w, err)
 			return
 		}
 	}).Methods("POST")
-}
-
-func (m *Middleware) handleError(w http.ResponseWriter, err error) {
-	var httpError *httperrors.HTTPError
-	if errors.As(err, &httpError) {
-		m.handleHttpError(w, httpError.StatusCode, fmt.Errorf("%s", httpError.Message))
-	} else {
-		m.handleHttpError(w, http.StatusInternalServerError, err)
-	}
-}
-
-func (m *Middleware) handleHttpError(w http.ResponseWriter, statusCode int, err error) {
-	w.WriteHeader(statusCode)
-	_ = m.renderPage(w, "error.gohtml", ErrorTemplateData{
-		StatusCode: statusCode,
-		Error:      err,
-	})
 }

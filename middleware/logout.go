@@ -3,18 +3,8 @@ package middleware
 import (
 	"fmt"
 	"github.com/fastbill/go-httperrors"
-	"github.com/gorilla/csrf"
-	ory "github.com/ory/client-go"
-	"html/template"
 	"net/http"
 )
-
-type LogoutTemplateData struct {
-	Provider          ProviderInfo
-	Request           *ory.OAuth2LogoutRequest
-	CSRFToken         string
-	CSRFTemplateField template.HTML
-}
 
 func (m *Middleware) getLogout(w http.ResponseWriter, r *http.Request) error {
 	logoutChallenge := r.URL.Query().Get("logout_challenge")
@@ -29,16 +19,7 @@ func (m *Middleware) getLogout(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("could not retrieve logout request: %w", err)
 	}
 
-	err = m.renderPage(w, "logout.gohtml",
-		LogoutTemplateData{
-			Provider: ProviderInfo{
-				Name: m.cfg.Name,
-			},
-			Request:           logoutRequest,
-			CSRFToken:         csrf.Token(r),
-			CSRFTemplateField: csrf.TemplateField(r),
-		},
-	)
+	err = m.renderer.RenderLogoutPage(w, r, logoutRequest)
 	if err != nil {
 		return err
 	}

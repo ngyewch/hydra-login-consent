@@ -5,10 +5,9 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/ngyewch/hydra-login-consent/adaptor"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
-	"github.com/ngyewch/hydra-login-consent/resources"
 	ory "github.com/ory/client-go"
-	"html/template"
 )
 
 type Server struct {
@@ -16,7 +15,7 @@ type Server struct {
 	e   *echo.Echo
 }
 
-func New(cfg *Config, uiCfg *uiMiddleware.Config, provider uiMiddleware.Provider) (*Server, error) {
+func New(cfg *Config, renderer adaptor.Renderer, handler adaptor.Handler) (*Server, error) {
 	configuration := ory.NewConfiguration()
 	configuration.Servers = make([]ory.ServerConfiguration, 0)
 	for _, hydraAdminApiUrl := range cfg.HydraAdminApiUrls {
@@ -28,12 +27,7 @@ func New(cfg *Config, uiCfg *uiMiddleware.Config, provider uiMiddleware.Provider
 
 	oryContext := context.Background()
 
-	templates, err := template.ParseFS(resources.TemplateFS, "templates/*.gohtml")
-	if err != nil {
-		return nil, err
-	}
-
-	loginConsentMiddleware := uiMiddleware.New(uiCfg, oryClient, oryContext, templates, provider)
+	loginConsentMiddleware := uiMiddleware.New(oryClient, oryContext, renderer, handler)
 
 	e := echo.New()
 	e.HideBanner = true

@@ -1,8 +1,8 @@
-package resources
+package templates
 
 import "embed"
 
 var (
-	//go:embed templates
+	//go:embed *.gohtml
 	TemplateFS embed.FS
 )
