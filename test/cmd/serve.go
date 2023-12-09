@@ -1,9 +1,14 @@
 package cmd
 
 import (
+	"context"
+	"github.com/gorilla/csrf"
 	"github.com/knadh/koanf/v2"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic"
-	"github.com/ngyewch/hydra-login-consent/test/server"
+	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
+	ory "github.com/ory/client-go"
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +21,16 @@ var (
 )
 
 type ServeConfig struct {
-	Serve *server.Config `koanf:"serve"`
-	UI    *basic.Config  `koanf:"ui"`
+	ListenAddr        string        `koanf:"listenAddr"`
+	CsrfAuthKey       string        `koanf:"csrfAuthKey"`
+	HydraAdminApiUrls []string      `koanf:"hydraAdminApiUrls"`
+	UI                *basic.Config `koanf:"ui"`
+	Users             []UserEntry   `koanf:"user"`
+}
+
+type UserEntry struct {
+	Email    string `koanf:"email"`
+	Password string `koanf:"password"`
 }
 
 func serve(cmd *cobra.Command, args []string) error {
@@ -32,33 +45,51 @@ func serve(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	var serveConfig ServeConfig
-	err = k.Unmarshal("", &serveConfig)
+	var config ServeConfig
+	err = k.Unmarshal("", &config)
 	if err != nil {
 		return err
 	}
+
+	configuration := ory.NewConfiguration()
+	configuration.Servers = make([]ory.ServerConfiguration, 0)
+	for _, hydraAdminApiUrl := range config.HydraAdminApiUrls {
+		configuration.Servers = append(configuration.Servers, ory.ServerConfiguration{
+			URL: hydraAdminApiUrl,
+		})
+	}
+	oryClient := ory.NewAPIClient(configuration)
+	oryContext := context.Background()
 
 	templates, err := basic.DefaultTemplates()
 	if err != nil {
 		return err
 	}
+	renderer := basic.NewRenderer(config.UI, templates)
+	handler := basic.NewHandler(newLoginValidator(config.Users))
 
-	renderer := basic.NewRenderer(serveConfig.UI, templates)
-	handler := basic.NewHandler(dummyLoginValidator)
+	loginConsentMiddleware := uiMiddleware.New(oryClient, oryContext, renderer, handler)
 
-	s, err := server.New(serveConfig.Serve, renderer, handler)
-	if err != nil {
-		return err
-	}
+	e := echo.New()
+	e.HideBanner = true
 
-	return s.Start()
+	//e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(echo.WrapMiddleware(csrf.Protect([]byte(config.CsrfAuthKey))))
+	e.Use(echo.WrapMiddleware(loginConsentMiddleware.Handler))
+
+	return e.Start(config.ListenAddr)
 }
 
-func dummyLoginValidator(email string, password string) (bool, error) {
-	if password == "password" {
-		return true, nil
+func newLoginValidator(users []UserEntry) basic.LoginValidator {
+	return func(email string, password string) (bool, error) {
+		for _, user := range users {
+			if (user.Email == email) && (user.Password == password) {
+				return true, nil
+			}
+		}
+		return false, nil
 	}
-	return false, nil
 }
 
 func init() {

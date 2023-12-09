@@ -1,7 +1,14 @@
-[serve]
 listenAddr = ":3001"
 csrfAuthKey = "EKSCNfvopCoWw18NBFHkNfj7BTLnR5Kv"
 hydraAdminApiUrls = ["http://127.0.0.1:4445/"]
 
 [ui]
 Name = "Test Provider"
+
+[[user]]
+email = "alice@test.com"
+password = "alicepassword"
+
+[[user]]
+email = "bob@test.com"
+password = "bobpassword"
