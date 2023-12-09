@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic"
+	"github.com/ngyewch/hydra-login-consent/adaptor/basic/static"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
 	ory "github.com/ory/client-go"
 	"github.com/spf13/cobra"
@@ -76,6 +77,7 @@ func serve(cmd *cobra.Command, args []string) error {
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(echo.WrapMiddleware(csrf.Protect([]byte(config.CsrfAuthKey))))
+	e.StaticFS("/", static.StaticFS)
 	e.Use(echo.WrapMiddleware(loginConsentMiddleware.Handler))
 
 	return e.Start(config.ListenAddr)

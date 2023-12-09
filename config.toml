@@ -4,6 +4,7 @@ hydraAdminApiUrls = ["http://127.0.0.1:4445/"]
 
 [ui]
 Name = "Test Provider"
+backgroundImageUri = "/images/background.png"
 
 [[user]]
 email = "alice@test.com"

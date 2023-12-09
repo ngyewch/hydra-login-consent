@@ -6,6 +6,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 
     <style>
+        {{if .Config.BackgroundImageUri}}
+        html {
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-image: url("{{.Config.BackgroundImageUri}}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+
+        {{end}}
+
         .form {
             border-radius: var(--border-radius);
             padding: 2em;
