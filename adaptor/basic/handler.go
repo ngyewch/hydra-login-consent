@@ -7,35 +7,57 @@ import (
 
 type LoginValidator func(email string, password string) (bool, error)
 
+type ClaimsPopulator func(subject string, scope string, claims map[string]interface{}) error
+
 type Handler struct {
-	loginValidator LoginValidator
+	loginValidator  LoginValidator
+	claimsPopulator ClaimsPopulator
 }
 
-func NewHandler(loginValidator LoginValidator) *Handler {
+func NewHandler(loginValidator LoginValidator, claimsPopulator ClaimsPopulator) *Handler {
 	return &Handler{
-		loginValidator: loginValidator,
+		loginValidator:  loginValidator,
+		claimsPopulator: claimsPopulator,
 	}
 }
 
 func (h *Handler) HandleLogin(r *http.Request) (string, error) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	success, err := h.loginValidator(email, password)
-	if err != nil {
-		return "", err
-	}
-	if !success {
+	if h.loginValidator != nil {
+		success, err := h.loginValidator(email, password)
+		if err != nil {
+			return "", err
+		}
+		if !success {
+			return "", nil
+		}
+		return email, nil
+	} else {
 		return "", nil
 	}
-	return email, nil
 }
 
-func (h *Handler) PopulateClaims(consentRequest *client.OAuth2ConsentRequest, idToken map[string]interface{}) error {
+func (h *Handler) PopulateClaims(consentRequest *client.OAuth2ConsentRequest, claims map[string]interface{}) error {
+	cp := h.claimsPopulator
+	if cp == nil {
+		cp = DefaultClaimsPopulator
+	}
 	for _, scope := range consentRequest.RequestedScope {
-		switch scope {
-		case "email":
-			idToken["email"] = consentRequest.Subject
-			idToken["email_verified"] = true
+		err := cp(consentRequest.GetSubject(), scope, claims)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func DefaultClaimsPopulator(subject string, scope string, claims map[string]interface{}) error {
+	switch scope {
+	case "email":
+		if subject != "" {
+			claims["email"] = subject
+			claims["email_verified"] = true
 		}
 	}
 	return nil

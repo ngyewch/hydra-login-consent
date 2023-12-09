@@ -7,5 +7,5 @@ import (
 
 type Handler interface {
 	HandleLogin(r *http.Request) (string, error)
-	PopulateClaims(consentRequest *client.OAuth2ConsentRequest, idToken map[string]interface{}) error
+	PopulateClaims(consentRequest *client.OAuth2ConsentRequest, claims map[string]interface{}) error
 }

@@ -67,7 +67,7 @@ func serve(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	renderer := basic.NewRenderer(config.UI, templates)
-	handler := basic.NewHandler(newLoginValidator(config.Users))
+	handler := basic.NewHandler(newLoginValidator(config.Users), nil)
 
 	loginConsentMiddleware := uiMiddleware.New(oryClient, oryContext, renderer, handler)
 
