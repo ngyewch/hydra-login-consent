@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>Logout - {{.Provider.Name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+    <style>
+        .form {
+            border-radius: var(--border-radius);
+            padding: 2em;
+            background-color: rgba(255, 255, 255, 0.75);
+        }
+
+        .logo {
+            max-height: 150px;
+        }
+
+        .centered {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <form class="form" method="post">
+        <h1 class="centered">{{.Provider.Name}}</h1>
+        {{if .Request.Client.LogoUri}}
+            <div class="centered">
+                <img class="logo" src="{{.Request.Client.LogoUri}}">
+            </div>
+        {{end}}
+        {{if .Request.ClientName}}
+            <div class="centered">
+                Sign out of <b>{{.Request.Client.ClientName}}</b>
+            </div>
+        {{end}}
+
+        {{.CSRFTemplateField}}
+        <input type="hidden" name="challenge" value="{{.Request.Challenge}}"/>
+
+        <fieldset>
+            <div class="grid">
+                <button type="submit" name="submit" value="no" class="secondary">No</button>
+                <button type="submit" name="submit" value="yes">Yes</button>
+            </div>
+        </fieldset>
+    </form>
+</main>
+</body>
+</html>

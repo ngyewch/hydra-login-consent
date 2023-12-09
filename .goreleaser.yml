@@ -1,0 +1,28 @@
+project_name: hydra-login-consent
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+    - go generate ./...
+builds:
+  - id: hydra-login-consent-test
+    main: ./test
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+archives:
+  - format: zip
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  skip: true
+release:
+  disable: false

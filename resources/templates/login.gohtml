@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title>Login - {{.Provider.Name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+    <style>
+        .form {
+            border-radius: var(--border-radius);
+            padding: 2em;
+            background-color: rgba(255, 255, 255, 0.75);
+        }
+
+        .logo {
+            max-height: 150px;
+        }
+
+        .centered {
+            text-align: center;
+        }
+
+        .alert {
+            margin-bottom: var(--spacing);
+            padding: var(--form-element-spacing-vertical) var(--form-element-spacing-horizontal);
+            border-radius: var(--border-radius);
+            color: var(--color);
+            background-color: var(--background-color);
+            border: 1px solid var(--background-color);
+            background-image: var(--icon);
+            background-position: center left var(--form-element-spacing-vertical);
+            background-size: calc(var(--font-size) * 1.5) auto;
+            padding-left: calc(var(--form-element-spacing-vertical) * 2 + calc(var(--font-size) * 1.5));
+        }
+
+        .alert-danger {
+            --background-color: #ffebee;
+            --icon: var(--icon-invalid);
+            --color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <form class="form" method="post">
+        <h1 class="centered">{{.Provider.Name}}</h1>
+        {{if .Request.Client.LogoUri}}
+            <div class="centered">
+                <img class="logo" src="{{.Request.Client.LogoUri}}">
+            </div>
+        {{end}}
+        <div class="centered">
+            Sign in
+        </div>
+        {{if .Request.Client.ClientName}}
+            <div class="centered">
+                to continue to <b>{{.Request.Client.ClientName}}</b>
+            </div>
+        {{end}}
+
+        {{.CSRFTemplateField}}
+        <input type="hidden" name="challenge" value="{{.Request.Challenge}}"/>
+
+        <fieldset>
+            {{if .ErrorMessage}}
+                <div class="alert alert-danger" role="alert">{{.ErrorMessage}}</div>
+            {{end}}
+            <label for="email">
+                Email
+                <input type="email" id="email" name="email" placeholder="Email address" required/>
+            </label>
+            <label for="password">
+                Password
+                <input type="password" id="password" name="password" placeholder="Password" required/>
+            </label>
+            <label for="remember">
+                <input type="checkbox" id="remember" name="remember"> Remember me
+            </label>
+            <button type="submit" name="submit" value="Sign in">Sign in</button>
+            {{if .ForgotPasswordUri}}
+                <div class="centered">
+                    <a href="{{.ForgotPasswordUri}}">{{or .ForgotPasswordText "Forgot password"}}</a>
+                </div>
+            {{end}}
+        </fieldset>
+    </form>
+</main>
+</body>
+</html>
