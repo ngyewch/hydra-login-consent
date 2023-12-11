@@ -7,7 +7,7 @@ import (
 
 type LoginValidator func(email string, password string) (bool, error)
 
-type ClaimsPopulator func(subject string, scope string, claims map[string]interface{}) error
+type ClaimsPopulator func(consentRequest *client.OAuth2ConsentRequest, claims map[string]interface{}) error
 
 type Handler struct {
 	loginValidator  LoginValidator
@@ -43,21 +43,17 @@ func (h *Handler) PopulateClaims(consentRequest *client.OAuth2ConsentRequest, cl
 	if cp == nil {
 		cp = DefaultClaimsPopulator
 	}
-	for _, scope := range consentRequest.RequestedScope {
-		err := cp(consentRequest.GetSubject(), scope, claims)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return cp(consentRequest, claims)
 }
 
-func DefaultClaimsPopulator(subject string, scope string, claims map[string]interface{}) error {
-	switch scope {
-	case "email":
-		if subject != "" {
-			claims["email"] = subject
-			claims["email_verified"] = true
+func DefaultClaimsPopulator(consentRequest *client.OAuth2ConsentRequest, claims map[string]interface{}) error {
+	for _, scope := range consentRequest.RequestedScope {
+		switch scope {
+		case "email":
+			if consentRequest.HasSubject() {
+				claims["email"] = consentRequest.GetSubject()
+				claims["email_verified"] = true
+			}
 		}
 	}
 	return nil
