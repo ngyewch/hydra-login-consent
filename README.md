@@ -8,18 +8,18 @@ Golang http middleware for implementing the User Login and Consent flow of Ory O
 
 ## Example implementation
 
-### Build
-
-```
-task build-single
-```
-
-### Edit the config file
-
-`./config.toml`
-
-### Run
-
-```
-task run
-```
+1. Start a local instance of Hydra (OIDC OP).
+   ```
+   ./start-hydra.sh
+   ```
+2. Start a test app (OIDC RP).
+   ```
+   ./start-test-client.sh
+   ```
+3. [OPTIONAL] Edit the config file (`config.toml`) for the example implementation.
+4. Start the example implementation.
+   ```
+   task run
+   ```
+5. Open the browser to `http://127.0.0.1:8080`
+   * Test user credentials can be found in `config.toml`.
