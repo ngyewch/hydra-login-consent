@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ngyewch/hydra-login-consent/adaptor"
 	ory "github.com/ory/client-go"
+	"log/slog"
 	"net/http"
 )
 
@@ -49,7 +50,13 @@ func (m *Middleware) handleGET(router *mux.Router, path string, handler func(w h
 	router.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
 		if err != nil {
-			_ = m.renderer.RenderError(w, err)
+			renderErr := m.renderer.RenderError(w, err)
+			if renderErr != nil {
+				slog.LogAttrs(context.Background(), slog.LevelError, "render error",
+					slog.Any("err", err),
+					slog.Any("renderErr", renderErr),
+				)
+			}
 			return
 		}
 	}).Methods("GET")
@@ -59,7 +66,13 @@ func (m *Middleware) handlePOST(router *mux.Router, path string, handler func(w 
 	router.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
 		if err != nil {
-			_ = m.renderer.RenderError(w, err)
+			renderErr := m.renderer.RenderError(w, err)
+			if renderErr != nil {
+				slog.LogAttrs(context.Background(), slog.LevelError, "render error",
+					slog.Any("err", err),
+					slog.Any("renderErr", renderErr),
+				)
+			}
 			return
 		}
 	}).Methods("POST")

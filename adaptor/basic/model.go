@@ -28,6 +28,7 @@ type LogoutPageTemplateData struct {
 }
 
 type ErrorPageTemplateData struct {
+	Config           *Config
 	Error            string
 	ErrorDescription string
 	ErrorHint        string
@@ -35,6 +36,7 @@ type ErrorPageTemplateData struct {
 }
 
 type ErrorTemplateData struct {
+	Config     *Config
 	StatusCode int
 	Error      error
 }

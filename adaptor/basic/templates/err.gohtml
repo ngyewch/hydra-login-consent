@@ -18,15 +18,23 @@
             background-attachment: fixed;
         }
 
+        .error {
+            border-radius: var(--border-radius);
+            padding: 2em;
+            background-color: rgba(255, 255, 255, 0.75);
+        }
+
         {{end}}
     </style>
 </head>
 <body>
 <main class="container">
-    <h1>HTTP {{.StatusCode}}</h1>
-    {{if .Error}}
-        <h2>{{.Error}}</h2>
-    {{end}}
+    <div class="error">
+        <h1>HTTP {{.StatusCode}}</h1>
+        {{if .Error}}
+            <h2>{{.Error}}</h2>
+        {{end}}
+    </div>
 </main>
 </body>
 </html>

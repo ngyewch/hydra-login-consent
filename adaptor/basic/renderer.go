@@ -65,6 +65,7 @@ func (renderer *Renderer) RenderLogoutPage(w http.ResponseWriter, r *http.Reques
 func (renderer *Renderer) RenderErrorPage(w http.ResponseWriter, errorName string, errorDescription string, errorHint string, errorDebug string) error {
 	return renderer.renderPage(w, "error.gohtml",
 		ErrorPageTemplateData{
+			Config:           renderer.config,
 			Error:            errorName,
 			ErrorDescription: errorDescription,
 			ErrorHint:        errorHint,
@@ -76,16 +77,16 @@ func (renderer *Renderer) RenderErrorPage(w http.ResponseWriter, errorName strin
 func (renderer *Renderer) RenderError(w http.ResponseWriter, err error) error {
 	var httpError *httperrors.HTTPError
 	if errors.As(err, &httpError) {
-		renderer.renderHttpError(w, httpError.StatusCode, fmt.Errorf("%s", httpError.Message))
+		return renderer.renderHttpError(w, httpError.StatusCode, fmt.Errorf("%s", httpError.Message))
 	} else {
-		renderer.renderHttpError(w, http.StatusInternalServerError, err)
+		return renderer.renderHttpError(w, http.StatusInternalServerError, err)
 	}
-	return nil
 }
 
-func (renderer *Renderer) renderHttpError(w http.ResponseWriter, statusCode int, err error) {
+func (renderer *Renderer) renderHttpError(w http.ResponseWriter, statusCode int, err error) error {
 	w.WriteHeader(statusCode)
-	_ = renderer.renderPage(w, "err.gohtml", ErrorTemplateData{
+	return renderer.renderPage(w, "err.gohtml", ErrorTemplateData{
+		Config:     renderer.config,
 		StatusCode: statusCode,
 		Error:      err,
 	})
