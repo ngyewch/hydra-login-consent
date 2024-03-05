@@ -1,6 +1,6 @@
 module github.com/ngyewch/hydra-login-consent
 
-go 1.21
+go 1.22
 
 require (
 	github.com/fastbill/go-httperrors v1.0.0
