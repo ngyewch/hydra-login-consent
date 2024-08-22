@@ -9,9 +9,8 @@ import (
 
 var (
 	flagConfigFile = &cli.PathFlag{
-		Name:     "config-file",
-		Usage:    "config file",
-		Required: true,
+		Name:  "config-file",
+		Usage: "config file",
 	}
 
 	app = &cli.App{
