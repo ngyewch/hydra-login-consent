@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"context"
@@ -10,15 +10,7 @@ import (
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/static"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
 	ory "github.com/ory/client-go"
-	"github.com/spf13/cobra"
-)
-
-var (
-	serveCmd = &cobra.Command{
-		Use:   "serve [flags]",
-		Short: "Serve",
-		RunE:  serve,
-	}
+	"github.com/urfave/cli/v2"
 )
 
 type ServeConfig struct {
@@ -34,14 +26,11 @@ type UserEntry struct {
 	Password string `koanf:"password"`
 }
 
-func serve(cmd *cobra.Command, args []string) error {
-	configFile, err := cmd.Flags().GetString("config-file")
-	if err != nil {
-		return err
-	}
+func doServe(cCtx *cli.Context) error {
+	configFile := flagConfigFile.Get(cCtx)
 
 	k := koanf.New(".")
-	err = mergeConfig(k, configFile)
+	err := mergeConfig(k, configFile)
 	if err != nil {
 		return err
 	}
@@ -92,10 +81,4 @@ func newLoginValidator(users []UserEntry) basic.LoginValidator {
 		}
 		return false, nil
 	}
-}
-
-func init() {
-	rootCmd.AddCommand(serveCmd)
-
-	serveCmd.Flags().String("config-file", "", "config file")
 }
