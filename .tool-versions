@@ -1,5 +1,5 @@
-golang 1.22.0
-task 3.35.1
-goreleaser 1.24.0
+golang 1.23.0
+task 3.38.0
+goreleaser 2.2.0
 jq 1.7.1
-act 0.2.60
+act 0.2.65
