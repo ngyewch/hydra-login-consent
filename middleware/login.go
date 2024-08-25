@@ -8,6 +8,25 @@ import (
 	"net/url"
 )
 
+func (m *Middleware) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		err := m.getLogin(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	case http.MethodPost:
+		err := m.postLogin(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	default:
+		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
 func (m *Middleware) getLogin(w http.ResponseWriter, r *http.Request) error {
 	loginChallenge := r.URL.Query().Get("login_challenge")
 	if loginChallenge == "" {

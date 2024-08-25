@@ -7,6 +7,25 @@ import (
 	"net/http"
 )
 
+func (m *Middleware) ConsentHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		err := m.getConsent(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	case http.MethodPost:
+		err := m.postConsent(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	default:
+		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
 func (m *Middleware) getConsent(w http.ResponseWriter, r *http.Request) error {
 	consentChallenge := r.URL.Query().Get("consent_challenge")
 	if consentChallenge == "" {

@@ -6,6 +6,25 @@ import (
 	"net/http"
 )
 
+func (m *Middleware) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		err := m.getLogout(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	case http.MethodPost:
+		err := m.postLogout(w, r)
+		if err != nil {
+			m.handleError(w, r, err)
+			return
+		}
+	default:
+		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
 func (m *Middleware) getLogout(w http.ResponseWriter, r *http.Request) error {
 	logoutChallenge := r.URL.Query().Get("logout_challenge")
 	if logoutChallenge == "" {

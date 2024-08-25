@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/csrf"
 	"github.com/knadh/koanf/v2"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/static"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
 	ory "github.com/ory/client-go"
 	"github.com/urfave/cli/v2"
+	"net/http"
 )
 
 type ServeConfig struct {
@@ -59,17 +59,22 @@ func doServe(cCtx *cli.Context) error {
 	handler := basic.NewHandler(newLoginValidator(config.Users), nil)
 
 	loginConsentMiddleware := uiMiddleware.New(oryClient, oryContext, renderer, handler)
+	csrfMiddleware := csrf.Protect([]byte(config.CsrfAuthKey))
 
-	e := echo.New()
-	e.HideBanner = true
+	r := chi.NewRouter()
+	r.Route("/frontend", func(r chi.Router) {
+		r.Use(csrfMiddleware)
+		r.HandleFunc("/login", loginConsentMiddleware.LoginHandler)
+		r.HandleFunc("/consent", loginConsentMiddleware.ConsentHandler)
+		r.HandleFunc("/logout", loginConsentMiddleware.LogoutHandler)
+		r.HandleFunc("/error", loginConsentMiddleware.ErrorHandler)
+	})
+	r.Route("/backend", func(r chi.Router) {
+		r.Handle("/token-hook", http.HandlerFunc(loginConsentMiddleware.TokenHookHandler))
+	})
+	r.Handle("/", http.FileServerFS(static.StaticFS))
 
-	//e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(echo.WrapMiddleware(csrf.Protect([]byte(config.CsrfAuthKey))))
-	e.StaticFS("/", static.StaticFS)
-	e.Use(echo.WrapMiddleware(loginConsentMiddleware.Handler))
-
-	return e.Start(config.ListenAddr)
+	return http.ListenAndServe(config.ListenAddr, r)
 }
 
 func newLoginValidator(users []UserEntry) basic.LoginValidator {
