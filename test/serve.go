@@ -70,7 +70,8 @@ func doServe(cCtx *cli.Context) error {
 		r.HandleFunc("/error", loginConsentMiddleware.ErrorHandler)
 	})
 	r.Route("/backend", func(r chi.Router) {
-		r.Handle("/token-hook", http.HandlerFunc(loginConsentMiddleware.TokenHookHandler))
+		r.HandleFunc("/token-hook", loginConsentMiddleware.TokenHookHandler)
+		r.HandleFunc("/refresh-token-hook", loginConsentMiddleware.RefreshTokenHookHandler)
 	})
 	r.Handle("/", http.FileServerFS(static.StaticFS))
 
