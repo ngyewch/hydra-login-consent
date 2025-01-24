@@ -21,7 +21,7 @@ tasks:
     cmds:
       - go mod download
       - go mod tidy
-      - go list -u -m -json all | go run github.com/psampaz/go-mod-outdated@v0.9.0 -update -direct
+      - go list -u -m -json all | go-mod-outdated -update -direct
 
   mingo:
     cmds:
