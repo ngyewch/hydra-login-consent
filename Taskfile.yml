@@ -23,6 +23,11 @@ tasks:
       - go mod tidy
       - go list -u -m -json all | go run github.com/psampaz/go-mod-outdated@v0.9.0 -update -direct
 
+  mingo:
+    cmds:
+      - mise exec go@1.23.5 -- mise install 'go:github.com/bobg/mingo/cmd/mingo@0.12.0'
+      - mise exec 'go:github.com/bobg/mingo/cmd/mingo@0.12.0' -- mingo -tests -v
+
   run:
     desc: Run
     deps: [ build-single ]
