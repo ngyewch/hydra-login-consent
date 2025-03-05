@@ -1,6 +1,6 @@
 module github.com/ngyewch/hydra-login-consent
 
-go 1.21
+go 1.24.0
 
 require (
 	github.com/fastbill/go-httperrors v1.0.0
@@ -12,7 +12,7 @@ require (
 	github.com/knadh/koanf/providers/file v1.1.2
 	github.com/knadh/koanf/v2 v2.1.2
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/ory/client-go v1.16.2
+	github.com/ory/client-go v1.17.2
 	github.com/urfave/cli/v2 v2.27.5
 )
 
@@ -34,7 +34,7 @@ require (
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
