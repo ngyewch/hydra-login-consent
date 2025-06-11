@@ -25,8 +25,8 @@ tasks:
 
   mingo:
     cmds:
-      - mise exec go@1.24.0 -- mise install 'go:github.com/bobg/mingo/cmd/mingo@0.13.0'
-      - mise exec 'go:github.com/bobg/mingo/cmd/mingo@0.13.0' -- mingo -tests -v
+      - mise exec go@1.24.4 -- mise install 'go:github.com/bobg/mingo/cmd/mingo@0.13.1'
+      - mise exec 'go:github.com/bobg/mingo/cmd/mingo@0.13.1' -- mingo -tests -v
 
   run:
     desc: Run
