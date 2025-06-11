@@ -10,7 +10,7 @@ import (
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/static"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
 	ory "github.com/ory/client-go"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 type ServeConfig struct {
@@ -26,8 +26,8 @@ type UserEntry struct {
 	Password string `koanf:"password"`
 }
 
-func doServe(cCtx *cli.Context) error {
-	configFile := flagConfigFile.Get(cCtx)
+func doServe(ctx context.Context, cmd *cli.Command) error {
+	configFile := cmd.String(flagConfigFile.Name)
 
 	k := koanf.New(".")
 	err := mergeConfig(k, configFile)

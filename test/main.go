@@ -1,19 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"os"
 	"runtime/debug"
 )
 
 var (
-	flagConfigFile = &cli.PathFlag{
+	flagConfigFile = &cli.StringFlag{
 		Name:  "config-file",
 		Usage: "config file",
 	}
 
-	app = &cli.App{
+	app = &cli.Command{
 		Name:   "hydra-login-consent-test",
 		Usage:  "hydra-login-consent test",
 		Action: nil,
@@ -36,7 +37,7 @@ func main() {
 		app.Version = buildInfo.Main.Version
 	}
 
-	err := app.Run(os.Args)
+	err := app.Run(context.Background(), os.Args)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
