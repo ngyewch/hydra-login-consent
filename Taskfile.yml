@@ -9,12 +9,12 @@ tasks:
   build:
     desc: Build
     cmds:
-      - goreleaser --auto-snapshot --clean
+      - goreleaser build --clean --snapshot
 
   build-single:
     desc: Build (single)
     cmds:
-      - goreleaser build --auto-snapshot --clean --single-target --output dist/hydra-login-consent-test
+      - goreleaser build --clean --snapshot --single-target --output dist/hydra-login-consent-test
 
   dependencyUpdates:
     desc: Show dependency updates
