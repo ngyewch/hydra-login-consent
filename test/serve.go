@@ -73,7 +73,7 @@ func doServe(ctx context.Context, cmd *cli.Command) error {
 }
 
 func newLoginValidator(users []UserEntry) basic.LoginValidator {
-	return func(email string, password string) (bool, error) {
+	return func(ctx context.Context, email string, password string) (bool, error) {
 		for _, user := range users {
 			if (user.Email == email) && (user.Password == password) {
 				return true, nil

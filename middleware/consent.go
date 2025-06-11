@@ -50,7 +50,7 @@ func (m *Middleware) postConsent(w http.ResponseWriter, r *http.Request) error {
 		session := &ory.AcceptOAuth2ConsentRequestSession{
 			IdToken: idToken,
 		}
-		err = m.handler.PopulateClaims(consentRequest, idToken)
+		err = m.handler.PopulateClaims(r.Context(), consentRequest, idToken)
 		if err != nil {
 			return err
 		}
@@ -100,7 +100,7 @@ func (m *Middleware) handleConsent(w http.ResponseWriter, r *http.Request, conse
 		session := &ory.AcceptOAuth2ConsentRequestSession{
 			IdToken: idToken,
 		}
-		err = m.handler.PopulateClaims(consentRequest, idToken)
+		err = m.handler.PopulateClaims(r.Context(), consentRequest, idToken)
 		if err != nil {
 			return nil, false, fmt.Errorf("could not populate claims: %w", err)
 		}
