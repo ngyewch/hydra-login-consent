@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/fastbill/go-httperrors v1.0.0
-	github.com/gorilla/csrf v1.7.3
+	github.com/gorilla/csrf v1.7.2
 	github.com/gorilla/mux v1.8.1
 	github.com/knadh/koanf/parsers/json v1.0.0
 	github.com/knadh/koanf/parsers/toml v0.1.0
