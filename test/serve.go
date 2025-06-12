@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/csrf"
 	"github.com/knadh/koanf/v2"
 	"github.com/labstack/echo/v4"
@@ -14,16 +15,16 @@ import (
 )
 
 type ServeConfig struct {
-	ListenAddr        string        `koanf:"listenAddr"`
-	CsrfAuthKey       string        `koanf:"csrfAuthKey"`
-	HydraAdminApiUrls []string      `koanf:"hydraAdminApiUrls"`
-	UI                *basic.Config `koanf:"ui"`
-	Users             []UserEntry   `koanf:"user"`
+	ListenAddr        string        `koanf:"listenAddr" validate:"required"`
+	CsrfAuthKey       string        `koanf:"csrfAuthKey" validate:"len=32,ascii"`
+	HydraAdminApiUrls []string      `koanf:"hydraAdminApiUrls" validate:"gt=0,dive,url"`
+	UI                *basic.Config `koanf:"ui" validate:"required"`
+	Users             []UserEntry   `koanf:"user" validate:"required,dive"`
 }
 
 type UserEntry struct {
-	Email    string `koanf:"email"`
-	Password string `koanf:"password"`
+	Email    string `koanf:"email" validate:"email"`
+	Password string `koanf:"password" validate:"required"`
 }
 
 func doServe(ctx context.Context, cmd *cli.Command) error {
@@ -37,6 +38,12 @@ func doServe(ctx context.Context, cmd *cli.Command) error {
 
 	var config ServeConfig
 	err = k.Unmarshal("", &config)
+	if err != nil {
+		return err
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err = validate.Struct(config)
 	if err != nil {
 		return err
 	}
