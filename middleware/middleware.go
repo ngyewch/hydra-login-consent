@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"context"
+	"log/slog"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/ngyewch/hydra-login-consent/adaptor"
 	ory "github.com/ory/client-go"
-	"log/slog"
-	"net/http"
 )
 
 type Middleware struct {

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"path/filepath"
+
 	"github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
-	"path/filepath"
 )
 
 func mergeConfig(k *koanf.Koanf, configFile string) error {

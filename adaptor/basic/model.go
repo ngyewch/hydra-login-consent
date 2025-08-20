@@ -1,8 +1,9 @@
 package basic
 
 import (
-	ory "github.com/ory/client-go"
 	"html/template"
+
+	ory "github.com/ory/client-go"
 )
 
 type LoginPageTemplateData struct {

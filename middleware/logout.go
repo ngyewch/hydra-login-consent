@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/fastbill/go-httperrors"
 	"net/http"
+
+	"github.com/fastbill/go-httperrors"
 )
 
 func (m *Middleware) getLogout(w http.ResponseWriter, r *http.Request) error {

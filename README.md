@@ -4,7 +4,8 @@
 
 # hydra-login-consent
 
-Golang http middleware for implementing the User Login and Consent flow of Ory OAuth2 service ([Hydra](https://github.com/ory/hydra)). 
+Golang http middleware for implementing the User Login and Consent flow of Ory OAuth2
+service ([Hydra](https://github.com/ory/hydra)).
 
 ## Example implementation
 
@@ -22,4 +23,4 @@ Golang http middleware for implementing the User Login and Consent flow of Ory O
    task run
    ```
 5. Open the browser to `http://127.0.0.1:8080`
-   * Test user credentials can be found in `config.toml`.
+    * Test user credentials can be found in `config.toml`.

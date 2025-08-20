@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/fastbill/go-httperrors"
-	ory "github.com/ory/client-go"
 	"net/http"
 	"net/url"
+
+	"github.com/fastbill/go-httperrors"
+	ory "github.com/ory/client-go"
 )
 
 func (m *Middleware) getLogin(w http.ResponseWriter, r *http.Request) error {

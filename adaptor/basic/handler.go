@@ -2,8 +2,9 @@ package basic
 
 import (
 	"context"
-	"github.com/ory/client-go"
 	"net/http"
+
+	"github.com/ory/client-go"
 )
 
 type LoginValidator func(ctx context.Context, email string, password string) (bool, error)

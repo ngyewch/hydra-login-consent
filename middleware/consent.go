@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/fastbill/go-httperrors"
 	ory "github.com/ory/client-go"
-	"net/http"
 )
 
 func (m *Middleware) getConsent(w http.ResponseWriter, r *http.Request) error {

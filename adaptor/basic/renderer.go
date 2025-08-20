@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
+	"net/http"
+
 	"github.com/fastbill/go-httperrors"
 	"github.com/gorilla/csrf"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/templates"
 	ory "github.com/ory/client-go"
-	"html/template"
-	"net/http"
 )
 
 type Renderer struct {

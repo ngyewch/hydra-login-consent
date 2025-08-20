@@ -2,8 +2,9 @@ package adaptor
 
 import (
 	"context"
-	"github.com/ory/client-go"
 	"net/http"
+
+	"github.com/ory/client-go"
 )
 
 type Handler interface {

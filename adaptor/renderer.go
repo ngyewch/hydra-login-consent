@@ -1,8 +1,9 @@
 package adaptor
 
 import (
-	ory "github.com/ory/client-go"
 	"net/http"
+
+	ory "github.com/ory/client-go"
 )
 
 type Renderer interface {
