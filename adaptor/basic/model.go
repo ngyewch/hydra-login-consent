@@ -1,31 +1,23 @@
 package basic
 
 import (
-	"html/template"
-
 	ory "github.com/ory/client-go"
 )
 
 type LoginPageTemplateData struct {
-	Config            *Config
-	Request           *ory.OAuth2LoginRequest
-	CSRFToken         string
-	CSRFTemplateField template.HTML
-	ErrorMessage      string
+	Config       *Config
+	Request      *ory.OAuth2LoginRequest
+	ErrorMessage string
 }
 
 type ConsentPageTemplateData struct {
-	Config            *Config
-	Request           *ory.OAuth2ConsentRequest
-	CSRFToken         string
-	CSRFTemplateField template.HTML
+	Config  *Config
+	Request *ory.OAuth2ConsentRequest
 }
 
 type LogoutPageTemplateData struct {
-	Config            *Config
-	Request           *ory.OAuth2LogoutRequest
-	CSRFToken         string
-	CSRFTemplateField template.HTML
+	Config  *Config
+	Request *ory.OAuth2LogoutRequest
 }
 
 type ErrorPageTemplateData struct {

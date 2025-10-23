@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/fastbill/go-httperrors"
-	"github.com/gorilla/csrf"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/templates"
 	ory "github.com/ory/client-go"
 )
@@ -32,11 +31,9 @@ func DefaultTemplates() (*template.Template, error) {
 func (renderer *Renderer) RenderLoginPage(w http.ResponseWriter, r *http.Request, request *ory.OAuth2LoginRequest, errorMessage string) error {
 	return renderer.renderPage(w, "login.gohtml",
 		LoginPageTemplateData{
-			Config:            renderer.config,
-			Request:           request,
-			CSRFToken:         csrf.Token(r),
-			CSRFTemplateField: csrf.TemplateField(r),
-			ErrorMessage:      errorMessage,
+			Config:       renderer.config,
+			Request:      request,
+			ErrorMessage: errorMessage,
 		},
 	)
 }
@@ -44,10 +41,8 @@ func (renderer *Renderer) RenderLoginPage(w http.ResponseWriter, r *http.Request
 func (renderer *Renderer) RenderConsentPage(w http.ResponseWriter, r *http.Request, request *ory.OAuth2ConsentRequest) error {
 	return renderer.renderPage(w, "consent.gohtml",
 		ConsentPageTemplateData{
-			Config:            renderer.config,
-			Request:           request,
-			CSRFToken:         csrf.Token(r),
-			CSRFTemplateField: csrf.TemplateField(r),
+			Config:  renderer.config,
+			Request: request,
 		},
 	)
 }
@@ -55,10 +50,8 @@ func (renderer *Renderer) RenderConsentPage(w http.ResponseWriter, r *http.Reque
 func (renderer *Renderer) RenderLogoutPage(w http.ResponseWriter, r *http.Request, request *ory.OAuth2LogoutRequest) error {
 	return renderer.renderPage(w, "logout.gohtml",
 		LogoutPageTemplateData{
-			Config:            renderer.config,
-			Request:           request,
-			CSRFToken:         csrf.Token(r),
-			CSRFTemplateField: csrf.TemplateField(r),
+			Config:  renderer.config,
+			Request: request,
 		},
 	)
 }

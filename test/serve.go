@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"net/http"
 
+	"filippo.io/csrf"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/csrf"
 	"github.com/knadh/koanf/v2"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic"
 	"github.com/ngyewch/hydra-login-consent/adaptor/basic/static"
 	uiMiddleware "github.com/ngyewch/hydra-login-consent/middleware"
@@ -17,7 +17,6 @@ import (
 
 type ServeConfig struct {
 	ListenAddr        string        `koanf:"listenAddr" validate:"required"`
-	CsrfAuthKey       string        `koanf:"csrfAuthKey" validate:"len=32,ascii"`
 	HydraAdminApiUrls []string      `koanf:"hydraAdminApiUrls" validate:"gt=0,dive,url"`
 	UI                *basic.Config `koanf:"ui" validate:"required"`
 	Users             []UserEntry   `koanf:"user" validate:"required,dive"`
@@ -68,16 +67,13 @@ func doServe(ctx context.Context, cmd *cli.Command) error {
 
 	loginConsentMiddleware := uiMiddleware.New(oryClient, oryContext, renderer, handler)
 
-	e := echo.New()
-	e.HideBanner = true
+	csrfMiddleware := csrf.New()
 
-	//e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(echo.WrapMiddleware(csrf.Protect([]byte(config.CsrfAuthKey))))
-	e.StaticFS("/", static.StaticFS)
-	e.Use(echo.WrapMiddleware(loginConsentMiddleware.Handler))
-
-	return e.Start(config.ListenAddr)
+	router := chi.NewRouter()
+	router.Use(csrfMiddleware.Handler)
+	router.Use(loginConsentMiddleware.Handler)
+	router.Mount("/", http.FileServer(http.FS(static.StaticFS)))
+	return http.ListenAndServe(config.ListenAddr, router)
 }
 
 func newLoginValidator(users []UserEntry) basic.LoginValidator {

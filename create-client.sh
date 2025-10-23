@@ -4,7 +4,7 @@ set -e
 
 client=$(docker run -it --rm \
     --network host \
-    docker.io/oryd/hydra:v2.1 \
+    docker.io/oryd/hydra:v2.3 \
     create client \
     --endpoint http://127.0.0.1:4445/ \
     --grant-type authorization_code,refresh_token \
