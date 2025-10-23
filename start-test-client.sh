@@ -4,7 +4,7 @@ set -e
 
 eval $(./create-client.sh)
 
-docker build --tag gologin-test-app:0.1.0 https://github.com/ngyewch/gologin-test-app.git#v0.1.0
+docker build --tag gologin-test-app:0.5.0 https://github.com/ngyewch/gologin-test-app.git#v0.5.0
 docker run --rm -it \
     --network host \
     -p 8080:8080 \
@@ -12,5 +12,5 @@ docker run --rm -it \
     -e GOLOGIN_OIDC_CLIENTID=${CLIENT_ID} \
     -e GOLOGIN_OIDC_CLIENTSECRET=${CLIENT_SECRET} \
     -e GOLOGIN_OIDC_SCOPES=openid,profile,email \
-    gologin-test-app:0.1.0 \
+    gologin-test-app:0.5.0 \
     gologin-test-app serve
